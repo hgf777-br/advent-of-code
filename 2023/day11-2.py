@@ -1,6 +1,6 @@
-from math import trunc
 import numpy as np
 from itertools import combinations
+from time import time
 
 data = """...........................#.......#.....................#................#.......................................#.............#...........
 ..................................................#...........................................#.......................................#.....
@@ -154,41 +154,43 @@ data_test = """...#......
 .......#..
 #...#....."""
 
+time_start = time()
 
 data = data.split('\n')
 data = [[c for c in line] for line in data]
 data = np.array(data, dtype=object)
 
 
-def calculate_distance(data, galaxie_pair):
+def calculate_distance(data, galaxie_pair, rows_to_expand, columns_to_expand):
     galaxie_one = np.argwhere(data == galaxie_pair[0])
     galaxie_two = np.argwhere(data == galaxie_pair[1])
-    distance = abs(galaxie_one[0, 0] - galaxie_two[0, 0]) + abs(galaxie_one[0, 1] - galaxie_two[0, 1])
+    x1 = min(galaxie_one[0, 1], galaxie_two[0, 1])
+    x2 = max(galaxie_one[0, 1], galaxie_two[0, 1])
+    y1 = min(galaxie_one[0, 0], galaxie_two[0, 0])
+    y2 = max(galaxie_one[0, 0], galaxie_two[0, 0])
+    dy = y2 - y1
+    dx = x2 - x1
+    for row in rows_to_expand:
+        dy += 999999 if y1 < row < y2 else 0
+    for column in columns_to_expand:
+        dx += 999999 if x1 < column < x2 else 0
+    distance = dy + dx
 
     return distance
 
 
 # Expanding the Universe!
-# Expanding rows
+# Storing which rows to expand
 max_y, max_x = data.shape
-index = 0
-while index < max_y:
+rows_to_expand = []
+for index in range(max_y):
     if '#' not in data[index, :]:
-        data = np.insert(data, index, '.', axis=0)
-        index += 1
-        max_y += 1
-    index += 1
-# Expanding columns
-max_y, max_x = data.shape
-index = 0
-while index < max_x:
+        rows_to_expand.append(index)
+# toring which columns to expand
+columns_to_expand = []
+for index in range(max_x):
     if '#' not in data[:, index]:
-        data = np.insert(data, index, '.', axis=1)
-        index += 1
-        max_x += 1
-    index += 1
-max_y, max_x = data.shape
-print('Universe Expanded!')
+        columns_to_expand.append(index)
 
 # Numbering the galaxies
 number = 1
@@ -197,15 +199,15 @@ for y in range(max_y):
         if data[y, x] == '#':
             data[y, x] = number
             number += 1
-print('Galaxies numbered!!')
+
 # Creating galaxies pairs
 galaxy_pairs = list(combinations(range(1, number), 2))
-print(f'Galaxies pairs created!!! ({len(galaxy_pairs)})')
 
 # Calculating distances between galaxies
-result = sum(calculate_distance(data, galaxy_pair) for galaxy_pair in galaxy_pairs)
+result = sum(calculate_distance(data, galaxy_pair, rows_to_expand, columns_to_expand) for galaxy_pair in galaxy_pairs)
 
-print('day 11 part 1:', result)
+print('day 11 part 2:', result)
+print(f'time elapsed: {(time() - time_start)}')
 # print(data)
 # print(max_y, max_x)
 # print(galaxy_pairs)
