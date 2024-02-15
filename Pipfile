@@ -5,11 +5,7 @@ name = "pypi"
 
 [packages]
 numpy = "*"
-regex = "*"
 aoc-helper = "*"
-boto3 = "*"
-pyqtgraph = "*"
-pyqt6 = "*"
 pip = "*"
 
 [dev-packages]
