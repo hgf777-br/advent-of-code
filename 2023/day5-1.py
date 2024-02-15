@@ -1,3 +1,5 @@
+from time import time
+
 data = """seeds: 3037945983 743948277 2623786093 391282324 195281306 62641412 769611781 377903357 2392990228 144218002 1179463071 45174621 2129467491 226193957 1994898626 92402726 1555863421 340215202 426882817 207194644
 
 seed-to-soil map:
@@ -278,6 +280,8 @@ humidity-to-location map:
 60 56 37
 56 93 4"""
 
+time_start = time()
+
 data = data.split('\n')
 groups = [[]]
 group_number = 0
@@ -306,4 +310,6 @@ for group in groups:
         new_seeds.append(new_seed)
     seeds = new_seeds
 
-print(min(seeds))
+print('day 5 part 1:', min(seeds))
+
+print('time elapsed:', time() - time_start)
